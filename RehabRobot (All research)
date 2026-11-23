@@ -1,0 +1,25 @@
+This thesis designs a controller for a three-degree-of-freedom wrist rehabilitation robot that adapts to the patient as they exercise. The robot has no force sensor, so it works out from its own position, velocity and motor signals how stiff the patient's wrist is, how tired the patient is getting, and how much effort they're putting in. It then adjusts its own stiffness, damping and inertia to match. It was tested in MATLAB simulation and briefly on the real robot.
+
+How it works
+
+Sensing the patient's torque: a momentum observer estimates the torque the patient applies. Because any error in the robot model would be mistaken for patient torque, the robot is first calibrated with the handle empty, using least-squares identification plus a small neural network for the leftover error.
+Measuring wrist stiffness and damping: a tiny vibration at a different frequency for each joint is added to the motion. Lock-in detection of the response then gives the full stiffness and damping matrix, including the coupling between joints.
+Measuring fatigue and effort: an oscillator observer tracks the strength of the patient's voluntary movement, even while it fades linearly with fatigue.
+Handling spasms: a detection layer spots spasms. During one, the robot gets softer and more damped and lowers its torque limit.
+Learning online: a neural network learns each patient during the session without any true labels. Its output is blended with the physics-based estimates according to how confident it is.
+Assisting as needed: a rule turns tracking error, effort, fatigue and the game score into an assistance level, which sets the robot's impedance within safe bounds. Stiffness may only rise at a limited rate, to keep the changing impedance stable.
+Game: the patient flies an airplane through rings in a Unity game, linked to the controller every 10 ms. The score feeds back into how much the robot helps.
+
+Main results
+
+After calibration, the robot's model error is a fraction of a millinewton-metre.
+For a normal patient, wrist stiffness is estimated within about 2–4%, and the coupling term within about 3%.
+All spasms were detected with no false alarms, and the robot's torque never hit its limit.
+As fatigue grew, the robot helped more, and the tired patient's game score (0.744) stayed close to the normal patient's (0.777).
+The stability conditions were broken in at most 0.5% of samples, and only during spasms.
+A check of 3,888 operating points showed the system is stable with the calibrated model. If the model overestimates the robot's inertia by 20%, two thirds of those points become unstable.
+Pre-training the network made it more confident and helped with patients like those it was trained on, but not with unfamiliar ones.
+In a test with 30 random patients, stiffness was estimated well whenever there was no spasm. The weak spots were very stiff wrists, very severe spasms, and fatigue that starts before the reference measurement at the beginning of the session.
+On the real robot, the controller was stable and gave way softly when someone pushed the handle. Delays and noise from passing signals through several interface boards caused some jitter.
+
+Limitations and future work: the patient model and spasm thresholds haven't been validated clinically, and on the real robot only the robot's behaviour was tested, not the accuracy of the estimates. The stability analysis assumes the impedance settings are frozen in time. The next steps the thesis suggests are running the controller on real-time hardware, testing it on volunteers, carrying each patient's data over between sessions, and making the system more tolerant of errors in the inertia model.
