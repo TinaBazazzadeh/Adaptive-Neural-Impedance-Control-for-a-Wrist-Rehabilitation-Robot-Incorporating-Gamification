@@ -33,14 +33,7 @@ This thesis presents an adaptive neural-impedance controller for a three-degree-
 - Pre-training the network made it more confident and helped with patients similar to its training data, but not with unfamiliar ones. A test on 30 random patients showed this, along with the method's limits for very stiff wrists, very severe spasms and fatigue that starts early in the session.
 - On the real robot, the controller was stable and gave way softly when torque was applied to the handle. Some jitter came from delays in the hardware interface.
 
-## Files
 
-| File | Description |
-|------|-------------|
-| `Thesis_Bazazzadeh_English.pdf` | Full thesis in English (83 pages) |
-| `Thesis_Bazazzadeh_English_LaTeX.zip` | LaTeX source of the English thesis (main file, chapters and figures) |
-
-To rebuild the PDF from the source, unzip it and run `pdflatex main.tex` three times.
 
 ## Keywords
 
